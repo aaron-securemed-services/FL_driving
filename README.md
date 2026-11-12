@@ -97,12 +97,18 @@ B / A, X, Y, +). On-screen prompts default to PlayStation names, switch automati
 recognised controller is connected, and can be set by hand with the **Controller** button on
 the main menu.
 
+**Touchscreen (phones and iPads):** hold the device sideways. Steer with the pad on the left,
+use the BRAKE and GAS pedals on the right, and tap the dashboard for turn signals, gears,
+lights, wipers, seat belt, parking brake and hazards. In first person, press and hold a mirror
+to look that way. The touch controls appear on first touch and hide when a key is pressed.
+
 Menus work with the mouse, arrow keys + Enter, or the controller D-pad + confirm button.
 
 ## Version history
 
 The current version is shown at the bottom of the main menu.
 
+- **1.3.0** — Touchscreen controls for phones and iPads.
 - **1.2.0** — Can be hosted on GitHub Pages and installed as an app; plays offline once installed.
 - **1.1.0** — PlayStation, Xbox and Switch controller prompts (PlayStation by default, automatic
   detection, manual choice on the main menu).
