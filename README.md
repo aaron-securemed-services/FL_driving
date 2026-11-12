@@ -47,6 +47,15 @@ Automatic or manual transmission can be chosen on the main menu.
 
 ## Running it
 
+**Online (easiest):** once GitHub Pages is turned on for this repository, the game is at
+<https://aaron-securemed-services.github.io/FL_driving/>. Students only need the link.
+
+**Install it like an app:** open that link, then
+- Safari on a Mac: **File → Add to Dock**.
+- Chrome or Edge: click the install icon at the right of the address bar (or menu → **Install**).
+
+The game then has its own icon and window and keeps working without an internet connection.
+
 **On a Mac:** double-click `Start Game.command`. A small Terminal window opens, and the game
 opens in your browser. Leave that window open while you play; close it to stop.
 
@@ -94,6 +103,7 @@ Menus work with the mouse, arrow keys + Enter, or the controller D-pad + confirm
 
 The current version is shown at the bottom of the main menu.
 
+- **1.2.0** — Can be hosted on GitHub Pages and installed as an app; plays offline once installed.
 - **1.1.0** — PlayStation, Xbox and Switch controller prompts (PlayStation by default, automatic
   detection, manual choice on the main menu).
 - **1.0.0** — First release: 23 lessons in two modes, keyboard and controller support,
@@ -110,6 +120,7 @@ Not built yet:
 ## Project layout
 
 - `index.html`, `css/style.css` — page, menus and HUD
+- `manifest.webmanifest`, `sw.js`, `icons/` — make the hosted game installable and playable offline
 - `js/main.js` — render loop, cameras, mirrors, menus
 - `js/world.js` — scene, sky, lighting, roads, signs, signals, scenery
 - `js/actors.js` — cars, pedestrians, traffic AI, the player's car physics

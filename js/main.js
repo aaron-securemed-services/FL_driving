@@ -6,7 +6,7 @@ import { Input, PADS } from './input.js';
 import { Sound } from './audio.js';
 
 const $ = id => document.getElementById(id);
-export const VERSION = '1.1.0';
+export const VERSION = '1.2.0';
 const KEY = 'fl-driving-school-v1';
 let store = { stars: {}, manual: false, sound: true, quality: 'high', pad: 'ps', padAuto: true };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* storage unavailable */ }
@@ -211,4 +211,5 @@ function frame(now) {
 
 $('version').textContent = 'Version ' + VERSION;
 syncSettings(); resize(); makeBackdrop(); show('menu'); requestAnimationFrame(frame);
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => { /* offline play is optional */ });
 window.__game = { get session() { return session; }, startLesson, LESSONS, input, store, get screen() { return screen; } };
