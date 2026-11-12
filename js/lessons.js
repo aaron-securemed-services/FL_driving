@@ -18,9 +18,9 @@ export const LESSONS = [
       k.traffic([P(-128, 1.8), P(128, 1.8)], { speed: 12, loop: true, priority: true, s0: 100 });
       k.traffic([P(128, -1.8), P(-128, -1.8)], { speed: 12, loop: true, priority: true, s0: 40 });
       k.route([P(1.8, 115), P(1.8, 1.8), P(92, 1.8)]); k.goal(98, 1.8, 4);
-      k.say('Welcome! Hold W / ↑ (or RT on a controller) to accelerate. Steer with A / D. Stay in the right lane at or below 30 mph.');
-      k.tip(1.8, 62, 10, 'STOP sign ahead. Turn on your RIGHT signal now (E key / RB). Florida law: signal at least 100 ft before turning.');
-      k.tip(1.8, 28, 8, 'Brake smoothly (S / ↓ / LT) and come to a COMPLETE stop before the white stop line.');
+      k.say('Welcome! Hold W / ↑ (or {RT} on a controller) to accelerate. Steer with A / D. Stay in the right lane at or below 30 mph.');
+      k.tip(1.8, 62, 10, 'STOP sign ahead. Turn on your RIGHT signal now (E key / {RB}). Florida law: signal at least 100 ft before turning.');
+      k.tip(1.8, 28, 8, 'Brake smoothly (S / ↓ / {LT}) and come to a COMPLETE stop before the white stop line.');
       k.tip(1.8, 12, 4, 'Cross traffic does not stop. Wait for a safe gap, then turn right into the nearest lane.');
       w.scenery(-150, -150, 150, 150, { houses: 26, trees: 45, palms: 30, seed: 11 });
     },
@@ -51,7 +51,7 @@ export const LESSONS = [
         else if (ph === 5 && d > 17) { ph = 6; set(A, 'green', 'red'); k.say('GREEN: check that cross traffic has cleared, then go.'); }
       });
       k.say('Traffic signals. The colored bar on the pavement shows the light for your lane. Drive north toward the first light.');
-      k.tip(1.8, -95, 14, 'This light stays RED. You are turning right: signal RIGHT (E / RB), make a COMPLETE stop, yield to traffic and pedestrians, then turn right on red.');
+      k.tip(1.8, -95, 14, 'This light stays RED. You are turning right: signal RIGHT (E / {RB}), make a COMPLETE stop, yield to traffic and pedestrians, then turn right on red.');
       w.scenery(-110, -260, 110, 110, { buildings: 16, trees: 25, palms: 25, seed: 5 });
     },
   },
@@ -94,7 +94,7 @@ export const LESSONS = [
       for (const s0 of [0, 26, 52, 80]) k.traffic([P(-1.8, -122), P(-1.8, 122)], { speed: 12, loop: true, priority: true, s0 });
       k.route([P(1.8, 100), P(1.8, -1.8), P(-92, -1.8)]); k.goal(-98, -1.8, 4);
       k.say('You will turn LEFT at the light. Your light is green — but oncoming cars have a green too.');
-      k.tip(1.8, 55, 10, 'Signal LEFT (Q / LB) at least 100 ft before the turn.');
+      k.tip(1.8, 55, 10, 'Signal LEFT (Q / {LB}) at least 100 ft before the turn.');
       k.tip(1.8, 14, 6, 'Yield! Stop at the line or ease forward with your wheels straight. Turn only when there is a safe gap in oncoming traffic.');
       w.scenery(-130, -130, 130, 130, { buildings: 10, houses: 12, trees: 30, palms: 25, seed: 31 });
     },
@@ -115,7 +115,7 @@ export const LESSONS = [
       k.route(rt, 3); k.goal(-100, -1.8, 4);
       k.say('Roundabout ahead. Slow to about 15–20 mph. You will take the THIRD exit (a left turn).');
       k.tip(1.8, 34, 8, 'YIELD to cars already circulating. Enter only when there is a gap — turn right into the circle.');
-      k.tip(8, -8.5, 5, 'Keep going counter-clockwise. Signal RIGHT (E / RB) just before your exit so others know you are leaving.');
+      k.tip(8, -8.5, 5, 'Keep going counter-clockwise. Signal RIGHT (E / {RB}) just before your exit so others know you are leaving.');
       w.scenery(-130, -130, 130, 130, { houses: 22, trees: 35, palms: 40, seed: 41 });
     },
   },
@@ -198,7 +198,7 @@ export const LESSONS = [
       });
       k.goal(3.6, -380, 6);
       k.say('Four-lane road, 45 mph. Stay in the right lane and listen for sirens.');
-      k.tip(5.4, -95, 12, 'A police car is stopped on the right shoulder with lights flashing. MOVE OVER: signal left (Q / LB) and change to the left lane — or slow to 25 mph if you cannot.');
+      k.tip(5.4, -95, 12, 'A police car is stopped on the right shoulder with lights flashing. MOVE OVER: signal left (Q / {LB}) and change to the left lane — or slow to 25 mph if you cannot.');
       k.tip(1.8, -250, 9, 'Past the stopped vehicles. Signal right and return to the right lane.');
       w.scenery(-130, -410, 130, 180, { buildings: 14, trees: 45, palms: 45, seed: 71 });
     },
@@ -239,7 +239,7 @@ export const LESSONS = [
         leftT = l?.kind === 'road' && l.idx === 0 ? leftT + dt : 0; if (leftT > 11) { leftT = 0; k.violate('leftlane', 'Keep right! The left lane is for passing — move back to the right when you are done.', 5); }
         slowT = (mph(k) < 50 && p.z < 100 && p.z > -640 && (k.gap === null || k.gap > 45)) ? slowT + dt : 0; if (slowT > 6) { slowT = 0; k.violate('slow', 'Too slow for the highway: where the limit is 70 the minimum is 50 mph.', 5); }
       });
-      k.say('You are in the ACCELERATION lane. Speed up to match highway traffic (about 60–70 mph), signal LEFT (Q / LB), and merge into a gap before the lane ends.');
+      k.say('You are in the ACCELERATION lane. Speed up to match highway traffic (about 60–70 mph), signal LEFT (Q / {LB}), and merge into a gap before the lane ends.');
       k.tip(9, 60, 9, 'Merged! Stay in the right lane unless passing. Slower truck ahead? Signal, pass in the middle lane, then move back right.');
       k.tip(9, -330, 14, 'Your exit is coming up on the right. Be in the RIGHT lane now.'); k.tip(5.4, -330, 3, 'Your exit is coming up. Signal and move to the RIGHT lane now.');
       k.tip(9, -630, 8, 'Signal RIGHT and move into the exit lane. Slow down once you are on the ramp (45 mph).');
@@ -264,7 +264,7 @@ export const LESSONS = [
         wipeT = !p.wipers && Math.abs(p.v) > 2 ? wipeT + dt : 0; if (wipeT > 5) { wipeT = 0; k.violate('wipers', 'Turn on your wipers (K) — and remember: wipers on, headlights on.', 5, false, 10); }
       });
       k.route([P(1.8, 90), P(1.8, -240)], 5); k.goal(1.8, -245, 4);
-      k.say('Heavy rain! Turn on WIPERS (K / D-pad ↑) and HEADLIGHTS (L / Y). Slow down and brake earlier — the road is slippery.');
+      k.say('Heavy rain! Turn on WIPERS (K / D-pad ↑) and HEADLIGHTS (L / {Y}). Slow down and brake earlier — the road is slippery.');
       k.tip(1.8, 50, 10, 'The traffic signal ahead is DARK — the power is out. Treat it exactly like a four-way stop.');
       k.tip(1.8, -110, 12, 'FLASHING YELLOW for you: slow down and proceed with caution. Cross traffic has flashing RED and must stop.');
       w.scenery(-120, -260, 120, 110, { buildings: 14, houses: 10, trees: 30, palms: 30, seed: 101 });
@@ -314,8 +314,8 @@ export const LESSONS = [
       k.say('Step 1 — Fasten your seat belt: press B (controller: D-pad ↓).');
       k.onUpdate(() => {
         if (step === 0 && p.belt) { step = 1; t0 = k.t; k.say('Step 2 — Mirrors and blind spots. Look at the three mirrors at the top of the screen, then look LEFT (hold Z), RIGHT (hold C) and BEHIND (hold V). Controller: right stick.'); }
-        else if (step === 1 && p.lookT.L > t0 && p.lookT.R > t0 && p.lookT.B > t0) { step = 2; k.say(`Step 3 — Hold the BRAKE (S / LT), release the parking brake (Space), and shift into ${k.txt.drive}.`); }
-        else if (step === 2 && !p.handbrake && p.gear === (k.manual ? '1' : 'D')) { step = 3; t0 = k.t; car = k.traffic([P(1.8, 128), P(1.8, -205)], { speed: 11, priority: true }); k.say('Step 4 — Signal LEFT (Q / LB). Check your left mirror and look over your LEFT shoulder (Z). A car is coming: wait for it to pass, then pull out.'); }
+        else if (step === 1 && p.lookT.L > t0 && p.lookT.R > t0 && p.lookT.B > t0) { step = 2; k.say(`Step 3 — Hold the BRAKE (S / {LT}), release the parking brake (Space), and shift into ${k.txt.drive}.`); }
+        else if (step === 2 && !p.handbrake && p.gear === (k.manual ? '1' : 'D')) { step = 3; t0 = k.t; car = k.traffic([P(1.8, 128), P(1.8, -205)], { speed: 11, priority: true }); k.say('Step 4 — Signal LEFT (Q / {LB}). Check your left mirror and look over your LEFT shoulder (Z). A car is coming: wait for it to pass, then pull out.'); }
         else if (step === 3 && p.x < 3.3 && !judged) {
           judged = true; step = 4;
           if (p.blinker !== 'L') k.violate('signal', 'Signal before pulling away from the curb.', 5);
@@ -360,12 +360,12 @@ export const LESSONS = [
         if (ph < 2) lock(sh, 5.3);
         if (ph === 0 && p.lookT.L > .5) { ph = 1; t0 = k.t; k.say('There IS a car beside you — hidden in the blind spot. The mirror did not show it! Wait for it to pull ahead.'); }
         if (ph === 1 && k.t - t0 > 3.5) { ph = 2; sh.frozen = false; sh.cruise = Math.max(p.v + 8, 16); sh.v = p.v; }
-        if (ph === 2 && sh.z < p.z - 14) { ph = 3; k.say('Now it is clear. Signal LEFT (Q / LB), glance over your shoulder again (Z), and move one lane left.'); }
+        if (ph === 2 && sh.z < p.z - 14) { ph = 3; k.say('Now it is clear. Signal LEFT (Q / {LB}), glance over your shoulder again (Z), and move one lane left.'); }
         if (ph >= 2 && ph < 5 && k.loc?.idx === 0) { ph = 5; t0 = k.t; k.praise('Clean lane change to the left.'); sh2.gone = false; k.say('Task 2: return to the MIDDLE lane. Check the right mirror, then look over your RIGHT shoulder: hold C (right stick →).'); }
         if (ph === 5 || ph === 6) lock(sh2, 5.0);
         if (ph === 5 && p.lookT.R > t0) { ph = 6; t0 = k.t; k.say('Another car hiding in your right blind spot. Let it drop back before you move over.'); }
         if (ph === 6 && k.t - t0 > 3) { ph = 7; sh2.frozen = false; sh2.cruise = Math.max(p.v - 7, 2); sh2.v = p.v; }
-        if (ph === 7 && sh2.z > p.z + 15) { ph = 8; k.say('Clear on the right. Signal RIGHT (E / RB), shoulder check (C), and change lanes.'); }
+        if (ph === 7 && sh2.z > p.z + 15) { ph = 8; k.say('Clear on the right. Signal RIGHT (E / {RB}), shoulder check (C), and change lanes.'); }
         if (ph >= 5 && ph < 9 && k.loc?.idx === 1 && k.t - t0 > 1) { ph = 9; k.praise('Mirror, signal, shoulder check — every time.'); k.after(2.5, () => k.win()); }
         if (p.z < -1450) k.fail('Out of road before finishing both lane changes.');
       });
@@ -442,7 +442,7 @@ export const LESSONS = [
       const w = k.world; w.road(0, 70, 0, -70, { limit: 15 });
       for (let z = -14; z <= 14; z += 4) { k.cone(.1, z); k.cone(3.5, z); }
       const sp = k.spot(1.8, 9.5, N, 6, 3); k.start(1.8, -9, N); const p = k.player; let st = 0;
-      k.say('Back up 50 feet into the green box behind you. Hold the BRAKE, shift to REVERSE (R key / B button), HOLD V to look behind, and ease backwards between the cones.');
+      k.say('Back up 50 feet into the green box behind you. Hold the BRAKE, shift to REVERSE (R key / {B} button), HOLD V to look behind, and ease backwards between the cones.');
       k.onUpdate(() => {
         if (p.v < -2.9) k.violate('backfast', 'Too fast! Back up at walking speed.', 5);
         if (st === 0 && k.inSpot(sp, .15, .12) && Math.abs(p.v) < .05) { st = 1; k.say(`Straight and in the box. Shift to ${k.txt.park}.`); }
@@ -521,7 +521,7 @@ export const LESSONS = [
       const onc = k.traffic([P(-1.8, -160), P(-1.8, 415)], { speed: 18, frozen: true, head: true }); onc.gone = true; onc.place();
       const lead = k.traffic([P(1.8, -330), P(1.8, -755)], { speed: 13, frozen: true, head: true });
       k.parked(5.3, -560, N, 'sedan', { hazard: true }); k.ped([P(5.2, -120), P(5.2, -300)], { shirt: 0x222222, pants: 0x111111, speed: 1.2 });
-      k.say('It is night. Turn on your headlights: press L (controller: Y).');
+      k.say('It is night. Turn on your headlights: press L (controller: {Y}).');
       k.onUpdate((dt) => {
         if (st === 0 && p.lights) { st = 1; k.say('Low beams are on. This road is dark and empty — press L again for HIGH beams so you can see farther.'); }
         if (st === 1 && p.z < 210) { st = 2; onc.gone = false; onc.frozen = false; k.say('Oncoming headlights! Dim to LOW beams (press L until low) when the other car is within 500 feet.'); }

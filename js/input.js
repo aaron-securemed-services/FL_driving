@@ -7,9 +7,23 @@ const PRESS = { KeyQ: 'blinkL', KeyE: 'blinkR', KeyX: 'hazard', KeyF: 'gearUp', 
 // Standard gamepad mapping
 const PAD_PRESS = { 4: 'blinkL', 5: 'blinkR', 0: 'gearUp', 1: 'gearDown', 3: 'lights', 12: 'wipers', 13: 'belt', 14: 'hazard', 15: 'handbrake', 9: 'pause' };
 
+// Button names per controller family. Index = standard gamepad button position.
+export const PADS = {
+  ps: { name: 'PlayStation', A: '✕', B: '○', X: '□', Y: '△', LB: 'L1', RB: 'R1', LT: 'L2', RT: 'R2', START: 'Options', confirm: 0, back: 1 },
+  xbox: { name: 'Xbox', A: 'A', B: 'B', X: 'X', Y: 'Y', LB: 'LB', RB: 'RB', LT: 'LT', RT: 'RT', START: 'Menu', confirm: 0, back: 1 },
+  switch: { name: 'Switch', A: 'B', B: 'A', X: 'Y', Y: 'X', LB: 'L', RB: 'R', LT: 'ZL', RT: 'ZR', START: '+', confirm: 1, back: 0 }, // Nintendo: A (right button) confirms
+};
+export function detectPad(id) {
+  const s = (id || '').toLowerCase();
+  if (/dualsense|dualshock|playstation|ps[345]|054c/.test(s)) return 'ps';
+  if (/nintendo|switch|pro controller|joy-?con|057e/.test(s)) return 'switch';
+  if (/xbox|xinput|microsoft|045e/.test(s)) return 'xbox';
+  return null;
+}
+
 export class Input {
   constructor() {
-    this.down = new Set(); this.queue = []; this.padPrev = []; this.usingPad = false; this.navT = 0;
+    this.down = new Set(); this.queue = []; this.padPrev = []; this.usingPad = false; this.navT = 0; this.scheme = 'ps'; this.padId = null; this.onPad = null;
     this.state = { steer: 0, throttle: 0, brake: 0, look: '', horn: false, pressed: {} };
     addEventListener('keydown', e => {
       if (e.repeat) { if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault(); return; }
@@ -29,6 +43,7 @@ export class Input {
     s.nav = 0;
     const pads = navigator.getGamepads ? navigator.getGamepads() : []; let gp = null; for (const g of pads) if (g && g.connected && g.buttons.length >= 10) { gp = g; break; }
     this.pad = gp;
+    if (gp && gp.id !== this.padId) { this.padId = gp.id; this.onPad?.(detectPad(gp.id)); }
     if (gp) {
       const b = i => gp.buttons[i] ? gp.buttons[i].value || (gp.buttons[i].pressed ? 1 : 0) : 0, dz = v => Math.abs(v) < .14 ? 0 : (v - Math.sign(v) * .14) / .86;
       const edge = i => b(i) > .5 && !(this.padPrev[i] > .5);
@@ -37,7 +52,7 @@ export class Input {
       if (inMenu) {
         const now = performance.now(), dir = (edge(12) || (ay < -.6 && now > this.navT)) ? -1 : (edge(13) || (ay > .6 && now > this.navT)) ? 1 : (edge(14) || (ax < -.6 && now > this.navT)) ? -1 : (edge(15) || (ax > .6 && now > this.navT)) ? 1 : 0;
         if (dir) { s.nav = dir; this.navT = now + 260; }
-        if (edge(0)) pr.confirm = true; if (edge(1)) pr.back = true; if (edge(9)) pr.pause = true;
+        const P = PADS[this.scheme]; if (edge(P.confirm)) pr.confirm = true; if (edge(P.back)) pr.back = true; if (edge(9)) pr.pause = true;
       } else {
         if (Math.abs(ax) > Math.abs(s.steer)) s.steer = Math.sign(ax) * Math.pow(Math.abs(ax), 1.5);
         s.throttle = Math.max(s.throttle, b(7)); s.brake = Math.max(s.brake, b(6));

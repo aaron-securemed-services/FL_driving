@@ -82,7 +82,13 @@ school web server): upload the folder as-is.
 | Horn | H | X |
 | Pause | Esc or P | Start |
 
-Menus work with the mouse, arrow keys + Enter, or the controller D-pad + A.
+The controller column uses Xbox names. PlayStation and Switch controllers work the same way by
+button position (PlayStation: R2 / L2, L1 / R1, ✕ / ○, △, □, Options; Switch: ZR / ZL, L / R,
+B / A, X, Y, +). On-screen prompts default to PlayStation names, switch automatically when a
+recognised controller is connected, and can be set by hand with the **Controller** button on
+the main menu.
+
+Menus work with the mouse, arrow keys + Enter, or the controller D-pad + confirm button.
 
 ## Planned lessons
 
