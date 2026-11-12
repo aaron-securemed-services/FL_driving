@@ -2,12 +2,13 @@
 import { THREE, MPH, fwd, wrap } from './world.js';
 import { Session } from './game.js';
 import { LESSONS } from './lessons.js';
-import { Input } from './input.js';
+import { Input, PADS } from './input.js';
 import { Sound } from './audio.js';
 
 const $ = id => document.getElementById(id);
+export const VERSION = '1.1.0';
 const KEY = 'fl-driving-school-v1';
-let store = { stars: {}, manual: false, sound: true, quality: 'high' };
+let store = { stars: {}, manual: false, sound: true, quality: 'high', pad: 'ps', padAuto: true };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* storage unavailable */ }
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { /* ignore */ } };
 
@@ -15,6 +16,10 @@ const canvas = $('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;
 const input = new Input(), sound = new Sound(); sound.on = store.sound;
+if (!PADS[store.pad]) store.pad = 'ps';
+const pad = () => PADS[store.pad], fmt = t => String(t).replace(/\{(\w+)\}/g, (m, k) => pad()[k] || m);
+input.scheme = store.pad;
+input.onPad = kind => { if (kind && store.padAuto && kind !== store.pad) { store.pad = kind; applyPad(); } }; // a recognised controller picks its own labels unless the player chose one
 
 const topCam = new THREE.PerspectiveCamera(50, 1, 1, 5000), fpCam = new THREE.PerspectiveCamera(70, 1, .08, 5000);
 const mirrors = [
@@ -44,7 +49,7 @@ addEventListener('resize', resize);
 
 // ---------- UI glue ----------
 const ui = {
-  coach(text) { $('coachText').textContent = text; const c = $('coach'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); sound.sfx('info'); },
+  coach(text) { lastCoach = text; $('coachText').textContent = fmt(text); const c = $('coach'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); sound.sfx('info'); },
   toast(text, type = 'info', pts) {
     const t = document.createElement('div'); t.className = 'toast ' + type; t.textContent = (type === 'bad' && pts ? `−${pts}  ` : type === 'good' ? '★  ' : '') + text;
     const box = $('toasts'); box.appendChild(t); while (box.children.length > 3) box.firstChild.remove(); setTimeout(() => t.remove(), type === 'info' ? 2200 : 5200);
@@ -91,10 +96,10 @@ function startLesson(l) {
   show('game'); last = performance.now();
 }
 function hintHtml(fp) {
-  const rows = [['W / S', 'RT / LT', 'Gas / Brake'], ['A / D', 'L-stick', 'Steer'], ['Q / E', 'LB / RB', 'Turn signals'], ['F / R', 'A / B', 'Gear up / down'], ['L', 'Y', 'Headlights'], ['K', 'D-pad ↑', 'Wipers'], ['Space', 'D-pad →', 'Parking brake']];
+  const rows = [['W / S', '{RT} / {LT}', 'Gas / Brake'], ['A / D', 'L-stick', 'Steer'], ['Q / E', '{LB} / {RB}', 'Turn signals'], ['F / R', '{A} / {B}', 'Gear up / down'], ['L', '{Y}', 'Headlights'], ['K', 'D-pad ↑', 'Wipers'], ['Space', 'D-pad →', 'Parking brake']];
   if (fp) rows.push(['Z / C / V', 'R-stick', 'Look left / right / back'], ['B', 'D-pad ↓', 'Seat belt']);
-  rows.push(['H', 'X', 'Horn'], ['Esc', 'Start', 'Pause']);
-  return rows.map(r => `<div><kbd>${r[0]}</kbd><kbd class="pad">${r[1]}</kbd><span>${r[2]}</span></div>`).join('');
+  rows.push(['H', '{X}', 'Horn'], ['Esc', '{START}', 'Pause']);
+  return rows.map(r => `<div><kbd>${r[0]}</kbd><kbd class="pad">${fmt(r[1])}</kbd><span>${r[2]}</span></div>`).join('');
 }
 function showResult(s) {
   if (s !== session) return; const win = s.state === 'win' && s.score >= 70, st = win ? s.stars : 0;
@@ -115,7 +120,17 @@ function makeBackdrop() {
   if (backdrop) return; backdrop = new Session(renderer, LESSONS.find(l => l.id === 't5'), {}, stub);
   backdrop.goalObj.mesh.visible = false; backdrop.world.root.add(topCam); backdrop.player.model.visible = false; backdrop.player.place(1.8, 300, Math.PI);
 }
+const CONTROLS = [['Gas / Brake', 'W / S or ↑ / ↓', '{RT} / {LT}'], ['Steer', 'A / D or ← / →', 'Left stick'], ['Left / right turn signal', 'Q / E', '{LB} / {RB}'], ['Gear up / down (P‑R‑N‑D)', 'F / R', '{A} / {B}'],
+  ['Headlights (off, low, high)', 'L', '{Y}'], ['Wipers', 'K', 'D‑pad ↑'], ['Seat belt', 'B', 'D‑pad ↓'], ['Hazard lights', 'X', 'D‑pad ←'], ['Parking brake', 'Space', 'D‑pad →'],
+  ['Look left / right / behind', 'Z / C / V (hold)', 'Right stick ← → ↓'], ['Horn', 'H', '{X}'], ['Pause', 'Esc or P', '{START}'], ['Menus: select / back', 'Enter / Esc', '{MC} / {MB}']];
+function applyPad() {
+  const P = pad(); input.scheme = store.pad; P.MC = [P.A, P.B][P.confirm]; P.MB = [P.A, P.B][P.back];
+  $('optPad').textContent = 'Controller: ' + P.name;
+  $('controlsTable').innerHTML = `<tr><th>Action</th><th>Keyboard</th><th>${P.name} controller</th></tr>` + CONTROLS.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${fmt(r[2])}</td></tr>`).join('');
+  if (session) { $('hintKeys').innerHTML = hintHtml(session.fp); if (lastCoach) $('coachText').textContent = fmt(lastCoach); }
+}
 function syncSettings() {
+  applyPad();
   $('optTrans').textContent = 'Transmission: ' + (store.manual ? 'Manual' : 'Automatic'); $('optSound').textContent = 'Sound: ' + (store.sound ? 'On' : 'Off'); $('optQuality').textContent = 'Graphics: ' + (store.quality === 'high' ? 'High' : 'Performance');
 }
 
@@ -127,7 +142,9 @@ on('pauseResume', () => { show('game'); last = performance.now(); }); on('pauseR
 on('resRetry', () => startLesson(curLesson)); on('resLessons', () => { toMenu(); showLessons(curLesson.mode); });
 on('optTrans', () => { store.manual = !store.manual; persist(); syncSettings(); });
 on('optSound', () => { store.sound = !store.sound; sound.setOn(store.sound); persist(); syncSettings(); });
-on('optQuality', () => { store.quality = store.quality === 'high' ? 'low' : 'high'; persist(); syncSettings(); resize(); });
+on('optPad', () => { const k = Object.keys(PADS); store.pad = k[(k.indexOf(store.pad) + 1) % k.length]; store.padAuto = false; persist(); applyPad(); });
+on('optQuality', () => { store.quality = store.quality === 'high' ? 'low' : 'high'; persist(); $('version').textContent = 'Version ' + VERSION;
+syncSettings(); resize(); });
 addEventListener('keydown', e => {
   if (screen === 'game') return; const f = focusables(); if (!f.length) return; let i = f.indexOf(document.activeElement);
   if (['ArrowDown', 'ArrowRight'].includes(e.code)) { f[(i + 1) % f.length].focus(); e.preventDefault(); }
@@ -137,7 +154,7 @@ addEventListener('keydown', e => {
 addEventListener('blur', () => { if (screen === 'game' && session?.state === 'run') show('pause'); });
 
 // ---------- HUD ----------
-let lastSign = null;
+let lastSign = null, lastCoach = '';
 function updateHud(s) {
   const p = s.player, mph = Math.abs(p.v) * MPH, blink = (s.t * 1.5) % 1 < .5;
   $('speed').textContent = Math.round(mph); $('gauge').style.setProperty('--p', Math.min(mph / 90, 1)); $('gauge').classList.toggle('over', mph > s.limit + 4.5);
@@ -192,5 +209,6 @@ function frame(now) {
   if (session && s.fp) { renderer.autoClear = false; renderer.clearDepth(); renderer.render(hudScene, hudCam); renderer.autoClear = true; }
 }
 
+$('version').textContent = 'Version ' + VERSION;
 syncSettings(); resize(); makeBackdrop(); show('menu'); requestAnimationFrame(frame);
 window.__game = { get session() { return session; }, startLesson, LESSONS, input, store, get screen() { return screen; } };
