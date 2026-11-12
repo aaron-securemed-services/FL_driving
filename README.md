@@ -84,6 +84,14 @@ school web server): upload the folder as-is.
 
 Menus work with the mouse, arrow keys + Enter, or the controller D-pad + A.
 
+## Planned lessons
+
+Not built yet:
+
+- Drawbridges (signals, gates and where to stop)
+- Sharing the road with motorcycles
+- Large-truck blind zones ("no-zones")
+
 ## Project layout
 
 - `index.html`, `css/style.css` — page, menus and HUD
