@@ -105,6 +105,7 @@ export const LESSONS = [
     build(k) {
       const w = k.world, R0 = 8.5, R1 = 15; w.ring(0, 0, R0, R1); w.palm(0, 0, 1.2); w.palm(3, 2, .9); w.palm(-2.5, -2, 1);
       w.road(0, -115, 0, -R1 + .6); w.road(0, R1 - .6, 0, 115); w.road(-115, 0, -R1 + .6, 0); w.road(R1 - .6, 0, 115, 0);
+      for (const q of [1, -1]) for (const e of [1, -1]) { w.pad(e * 3.6, q * 11.5, e * 7.6, q * 23); w.pad(q * 11.5, e * 3.6, q * 23, e * 7.6); } // flared entries and exits
       w.sign('warn', 5.6, 60, N, 'ROUND\nABOUT'); w.sign('yield', 5.6, 20, N); w.sign('yield', -5.6, -20, S); w.sign('yield', -20, 5.6, E); w.sign('yield', 20, -5.6, W);
       k.holdLine(1.8, 16.5, N, 3.6, { active: () => false }); w.line(.3, 16.5, 3.4, 16.5, .35);
       const circ = []; for (let i = 0; i <= 32; i++) { const a = i / 32 * Math.PI * 2; circ.push(P(11.75 * Math.cos(a), -11.75 * Math.sin(a))); }

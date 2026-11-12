@@ -59,6 +59,7 @@ export class Session {
     if (arms.includes('W')) w.road(cx - hx - L('W'), cz, cx - hx, cz, re);
     if (arms.includes('E')) w.road(cx + hx, cz, cx + hx + L('E'), cz, re);
     if ((o.sidewalk ?? lim <= 35) && !o.shoulder) for (const sx of [1, -1]) for (const sz of [1, -1]) w.box(2, .16, 2, w.mat.walk, cx + sx * (hx + 1), .08, cz + sz * (hz + 1), 0, false);
+    for (const sx of [1, -1]) for (const sz of [1, -1]) w.pads.push({ x0: cx + (sx > 0 ? hx : -hx - 3.4), x1: cx + (sx > 0 ? hx + 3.4 : -hx), z0: cz + (sz > 0 ? hz : -hz - 3.4), z1: cz + (sz > 0 ? hz + 3.4 : -hz) }); // mountable corner radius
     const xw = o.xwalk, off = xw ? 5 : 1.2, ctl = o.control || 'none';
     const ap = { S: { h: N, x: cx + hx / 2, z: cz + hz + off, w: hx, cw: [cx, cz + hz + 2.4, 2 * hx], far: 2 * hz }, N: { h: S, x: cx - hx / 2, z: cz - hz - off, w: hx, cw: [cx, cz - hz - 2.4, 2 * hx], far: 2 * hz },
       W: { h: E, x: cx - hx - off, z: cz + hz / 2, w: hz, cw: [cx - hx - 2.4, cz, 2 * hz], far: 2 * hx }, E: { h: W, x: cx + hx + off, z: cz - hz / 2, w: hz, cw: [cx + hx + 2.4, cz, 2 * hz], far: 2 * hx } };

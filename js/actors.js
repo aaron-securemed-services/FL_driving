@@ -190,15 +190,19 @@ export class Npc {
     }
     // obstacle sensing
     this.blockedBy = null;
-    if (!this.ghost) {
-      const [fx, fz] = fwd(this.h), [rx, rz] = rgt(this.h), look = this.v * this.v / 9 + this.v * .7 + 3.5;
-      for (const e of sess.entities) {
-        if (e === this || e.gone) continue;
-        for (const c of circlesOf(e)) {
-          const dx = c[0] - this.x, dz = c[1] - this.z, f = dx * fx + dz * fz - this.L / 2 - c[2], lat = Math.abs(dx * rx + dz * rz);
-          if (f > -this.L * .4 && f < look && lat < this.W / 2 + c[2] + .25) {
-            const along = e.isCar || e === sess.player ? Math.max(0, (e.v || 0) * Math.cos(wrap((e.h || 0) - this.h))) : 0;
-            const vt = f > 4 ? along : 0; if (vt < target) { target = vt; decel = f < look * .6 ? 7.5 : 4; this.blockedBy = e; this.blockF = f; }
+    if (!this.ghost) { // look along the path ahead (so curves and roundabouts are sensed correctly)
+      const look = this.v * this.v / 9 + this.v * .7 + 3.5, P = this.path, cs = [];
+      for (const e of sess.entities) { if (e === this || e.gone) continue; if (Math.hypot(e.x - this.x, e.z - this.z) > look + 14) continue; for (const c of circlesOf(e)) cs.push([c, e]); }
+      if (cs.length) {
+        let hi = this.hi, found = false;
+        for (let d = this.L * .3; d < this.L / 2 + look && !found; d += 1.5) {
+          let sp = this.s + d; if (sp > P.len) { if (!P.loop) break; sp -= P.len; hi = 0; }
+          const q = pathAt(P, sp, hi); hi = q.i;
+          for (const [c, e] of cs) {
+            if (Math.hypot(c[0] - q.x, c[1] - q.z) > this.W / 2 + c[2] + .25) continue;
+            const f = d - this.L / 2 - c[2], along = e.isCar ? Math.max(0, (e.v || 0) * Math.cos(wrap((e.h || 0) - q.h))) : 0, vt = f > 4 ? along : 0;
+            if (vt < target) { target = vt; decel = f < look * .6 ? 7.5 : 4; this.blockedBy = e; this.blockF = f; }
+            found = true;
           }
         }
       }
