@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sunshine Driving School — Florida Driving Game</title>
 <meta name="description" content="Learn Florida's rules of the road and practice real driving skills in your browser.">
 <meta name="theme-color" content="#0d1b2a">
@@ -28,17 +28,25 @@
   <div id="toasts"></div>
   <div id="flash" class="hidden"></div>
   <div id="hintKeys"></div>
+  <div id="touch">
+    <button id="tPause" aria-label="Pause">❚❚</button>
+    <div id="tSteer"><div id="tKnob">◀ ▶</div></div>
+    <div id="tPedals"><div id="tBrake">BRAKE</div><div id="tGas">GAS</div></div>
+    <div id="lookL" class="look">HOLD TO LOOK</div><div id="lookR" class="look">HOLD TO LOOK</div><div id="lookB" class="look">HOLD TO LOOK BACK</div>
+  </div>
   <div id="dash">
     <div id="blL" class="arrow">◀</div>
     <div id="gauge"><div id="gaugeIn"><b id="speed">0</b><small>MPH</small></div></div>
     <div id="dashMid">
       <div id="gears"></div>
       <div id="rpmWrap"><div id="rpm"></div></div>
-      <div id="icons"><span id="icLights" class="ic">LIGHTS</span><span id="icBelt" class="ic">BELT</span><span id="icBrake" class="ic">P-BRAKE</span><span id="icWipers" class="ic">WIPERS</span></div>
+      <div id="icons"><span id="icLights" class="ic">LIGHTS</span><span id="icBelt" class="ic">BELT</span><span id="icBrake" class="ic">P-BRAKE</span><span id="icWipers" class="ic">WIPERS</span><span id="icHazard" class="ic">HAZARD</span><span id="icHorn" class="ic">HORN</span></div>
     </div>
     <div id="blR" class="arrow">▶</div>
   </div>
 </div>
+
+<div id="rotate"><div>↻<br>Turn your device sideways to drive</div></div>
 
 <div id="menu" class="screen">
   <div class="panel hero">
@@ -52,7 +60,7 @@
     <div class="opts">
       <button id="optTrans" class="small"></button><button id="optSound" class="small"></button><button id="optQuality" class="small"></button><button id="optPad" class="small"></button><button id="btnControls" class="small">Controls</button>
     </div>
-    <p class="fine">Keyboard or controller (PlayStation, Xbox or Switch). A study aid based on Florida driving rules — not an official FLHSMV product. Always study the official Florida Driver License Handbook.</p>
+    <p class="fine">Keyboard, controller (PlayStation, Xbox or Switch) or touchscreen. A study aid based on Florida driving rules — not an official FLHSMV product. Always study the official Florida Driver License Handbook.</p>
     <p class="fine" id="version"></p>
   </div>
 </div>
@@ -102,6 +110,7 @@
   <div class="panel">
     <h2>Controls</h2>
     <table id="controlsTable"></table>
+    <p class="fine"><b>Touchscreen:</b> steer with the pad on the left, use the BRAKE and GAS pedals on the right, and tap the dashboard for turn signals, gears, lights, wipers, seat belt and parking brake. In first person, press and hold a mirror to look that way.</p>
     <button id="controlsBack" class="small" data-back>◀ Back</button>
   </div>
 </div>

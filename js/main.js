@@ -6,10 +6,11 @@ import { Input, PADS } from './input.js';
 import { Sound } from './audio.js';
 
 const $ = id => document.getElementById(id);
-export const VERSION = '1.2.0';
+export const VERSION = '1.3.0';
 const KEY = 'fl-driving-school-v1';
 let store = { stars: {}, manual: false, sound: true, quality: 'high', pad: 'ps', padAuto: true };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* storage unavailable */ }
+if (!/"quality"/.test((() => { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } })()) && matchMedia('(pointer: coarse)').matches && Math.min(window.screen.width, window.screen.height) < 500) store.quality = 'low'; // phones start in performance mode
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { /* ignore */ } };
 
 const canvas = $('c');
@@ -17,7 +18,12 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPrefere
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;
 const input = new Input(), sound = new Sound(); sound.on = store.sound;
 if (!PADS[store.pad]) store.pad = 'ps';
-const pad = () => PADS[store.pad], fmt = t => String(t).replace(/\{(\w+)\}/g, (m, k) => pad()[k] || m);
+const pad = () => PADS[store.pad];
+// On a touchscreen, swap keyboard hints for the names of the on-screen buttons.
+const TOUCH_WORDS = [[/Hold W \/ ↑/g, 'Hold the GAS pedal'], [/Steer with A \/ D/g, 'Steer with the pad on the left'], [/press L again/g, 'tap LIGHTS again'], [/press L\b/g, 'tap LIGHTS'], [/press B\b/g, 'tap BELT'],
+  [/hold Z\b/gi, 'hold the left mirror'], [/hold C\b/gi, 'hold the right mirror'], [/hold V\b/gi, 'hold the top mirror'], [/hold A \/ ←/g, 'steer left'], [/hold D \/ →/g, 'steer right'], [/top-left of the screen/g, 'on the left of the screen'], [/ ?Controller: right stick\./g, '']];
+const touchText = t => { for (const [a, b] of TOUCH_WORDS) t = t.replace(a, b); return t.replace(/\s*\((?=[^()]*(?:\bkey\b|\b[A-Z]\b|Space|D-pad|stick|controller|[✕○□△↑↓←→]))[^()]*\)/g, '').replace(/ {2,}/g, ' '); };
+const fmt = t => { t = String(t); if (input.usingTouch) t = touchText(t); return t.replace(/\{(\w+)\}/g, (m, k) => pad()[k] || m); };
 input.scheme = store.pad;
 input.onPad = kind => { if (kind && store.padAuto && kind !== store.pad) { store.pad = kind; applyPad(); } }; // a recognised controller picks its own labels unless the player chose one
 
@@ -42,8 +48,9 @@ function resize() {
   const w = innerWidth, h = innerHeight; renderer.setPixelRatio(store.quality === 'high' ? Math.min(devicePixelRatio || 1, 2) : 1); renderer.setSize(w, h, false);
   topCam.aspect = fpCam.aspect = w / h; topCam.updateProjectionMatrix(); fpCam.updateProjectionMatrix();
   hudCam.right = w; hudCam.top = h; hudCam.updateProjectionMatrix();
-  const s = Math.min(h / 900, w / 1500), place = (m, x, y) => { m.mesh.scale.set(-m.w * s, m.h * s, 1); m.frame.scale.set(m.w * s + 10, m.h * s + 10, 1); m.mesh.position.set(x, y, .1); m.frame.position.set(x, y, 0); };
+  const s = Math.max(Math.min(h / 900, w / 1500), .6), place = (m, x, y) => { m.mesh.scale.set(-m.w * s, m.h * s, 1); m.frame.scale.set(m.w * s + 10, m.h * s + 10, 1); m.mesh.position.set(x, y, .1); m.frame.position.set(x, y, 0); };
   place(mirrors[0], w / 2, h - 14 - mirrors[0].h * s / 2); place(mirrors[1], 16 + mirrors[1].w * s / 2, h * .5); place(mirrors[2], w - 16 - mirrors[2].w * s / 2, h * .5);
+  [['lookB', 0], ['lookL', 1], ['lookR', 2]].forEach(([id, i]) => { const m = mirrors[i], e = $(id).style, mw = m.w * s, mh = m.h * s; e.width = mw + 'px'; e.height = mh + 'px'; e.left = (m.mesh.position.x - mw / 2) + 'px'; e.top = (h - m.mesh.position.y - mh / 2) + 'px'; });
 }
 addEventListener('resize', resize);
 
@@ -51,7 +58,7 @@ addEventListener('resize', resize);
 const ui = {
   coach(text) { lastCoach = text; $('coachText').textContent = fmt(text); const c = $('coach'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); sound.sfx('info'); },
   toast(text, type = 'info', pts) {
-    const t = document.createElement('div'); t.className = 'toast ' + type; t.textContent = (type === 'bad' && pts ? `−${pts}  ` : type === 'good' ? '★  ' : '') + text;
+    const t = document.createElement('div'); t.className = 'toast ' + type; t.textContent = (type === 'bad' && pts ? `−${pts}  ` : type === 'good' ? '★  ' : '') + fmt(text);
     const box = $('toasts'); box.appendChild(t); while (box.children.length > 3) box.firstChild.remove(); setTimeout(() => t.remove(), type === 'info' ? 2200 : 5200);
     sound.sfx(type === 'bad' ? 'bad' : type === 'good' ? 'good' : 'click');
   },
@@ -63,7 +70,7 @@ const stub = { coach() { }, toast() { }, flash() { }, sfx() { }, result() { } };
 
 function show(name) {
   screen = name; for (const el of document.querySelectorAll('.screen')) el.classList.toggle('hidden', el.id !== name);
-  $('hud').classList.toggle('hidden', name !== 'game'); focusI = 0;
+  $('hud').classList.toggle('hidden', name !== 'game'); focusI = 0; document.body.classList.toggle('ingame', name === 'game');
   if (name !== 'game') { sound.engine(800, 0, false); sound.horn(false); if (name !== 'pause') sound.siren(false); setTimeout(() => focusables()[0]?.focus(), 30); }
 }
 const focusables = () => [...document.querySelectorAll(`#${screen} button:not([disabled])`)];
@@ -144,6 +151,23 @@ on('optTrans', () => { store.manual = !store.manual; persist(); syncSettings(); 
 on('optSound', () => { store.sound = !store.sound; sound.setOn(store.sound); persist(); syncSettings(); });
 on('optPad', () => { const k = Object.keys(PADS); store.pad = k[(k.indexOf(store.pad) + 1) % k.length]; store.padAuto = false; persist(); applyPad(); });
 on('optQuality', () => { store.quality = store.quality === 'high' ? 'low' : 'high'; persist(); $('version').textContent = 'Version ' + VERSION;
+// ---------- touchscreen ----------
+const setTouch = v => { if (input.usingTouch === v) return; input.usingTouch = v; document.body.classList.toggle('touch', v); applyPad(); };
+addEventListener('touchstart', () => setTouch(true), { passive: true }); input.onKey = () => setTouch(false);
+const T = input.touch, tap = (id, fn) => $(id).addEventListener('pointerdown', e => { e.preventDefault(); sound.init(); fn(e); });
+const hold = (id, on, off) => { const el = $(id), end = e => { if (el.dataset.pid !== String(e.pointerId)) return; delete el.dataset.pid; el.classList.remove('down'); off(); };
+  el.addEventListener('pointerdown', e => { e.preventDefault(); sound.init(); el.dataset.pid = e.pointerId; try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ } el.classList.add('down'); on(e); });
+  el.addEventListener('pointermove', e => { if (el.dataset.pid === String(e.pointerId)) on(e); }); for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(ev, end); };
+hold('tGas', () => T.throttle = 1, () => T.throttle = 0); hold('tBrake', () => T.brake = 1, () => T.brake = 0); hold('icHorn', () => T.horn = true, () => T.horn = false);
+hold('lookL', () => T.look = 'L', () => T.look = ''); hold('lookR', () => T.look = 'R', () => T.look = ''); hold('lookB', () => T.look = 'B', () => T.look = '');
+hold('tSteer', e => { const r = $('tSteer').getBoundingClientRect(), v = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width * .38))); T.steer = v; $('tKnob').style.transform = `translateX(${v * r.width * .3}px)`; }, () => { T.steer = 0; $('tKnob').style.transform = ''; });
+for (const [id, k] of [['blL', 'blinkL'], ['blR', 'blinkR'], ['icLights', 'lights'], ['icBelt', 'belt'], ['icBrake', 'handbrake'], ['icWipers', 'wipers'], ['icHazard', 'hazard']]) tap(id, () => input.queue.push(k));
+tap('tPause', () => { if (session?.state === 'run') show('pause'); });
+tap('gears', e => { // tap a gear letter to shift to it, one step at a time
+  const g = e.target.dataset?.g, p = session?.player; if (!g || !p || session.state !== 'run') return; const want = p.gears.indexOf(g);
+  while (p.gi !== want) { const msg = p.shift(Math.sign(want - p.gi), input.state.brake); if (msg) { ui.toast(msg, 'info'); break; } } sound.sfx('click'); });
+for (const ev of ['contextmenu', 'gesturestart', 'dblclick']) addEventListener(ev, e => { if (screen === 'game') e.preventDefault(); });
+
 syncSettings(); resize(); });
 addEventListener('keydown', e => {
   if (screen === 'game') return; const f = focusables(); if (!f.length) return; let i = f.indexOf(document.activeElement);
@@ -163,6 +187,7 @@ function updateHud(s) {
   $('blL').classList.toggle('on', (p.blinker === 'L' || p.hazard) && blink); $('blR').classList.toggle('on', (p.blinker === 'R' || p.hazard) && blink);
   if ((p.blinker || p.hazard) && blink !== blinkPrev) sound.sfx('blink'); blinkPrev = blink;
   $('icLights').className = 'ic' + (p.lights === 2 ? ' hi' : p.lights ? ' on' : ''); $('icLights').textContent = p.lights === 2 ? 'HIGH' : 'LIGHTS';
+  $('icHazard').className = 'ic' + (p.hazard ? ' warn' : ''); $('icHorn').className = 'ic' + (p.horn ? ' on' : '');
   $('icBelt').className = 'ic' + (p.belt ? ' on' : ' warn'); $('icBrake').className = 'ic' + (p.handbrake ? ' warn' : ''); $('icWipers').className = 'ic' + (p.wipers ? ' on' : '');
   $('rpm').style.width = Math.min(100, p.rpm / 65) + '%'; $('rpmWrap').classList.toggle('hidden', !p.manual);
   const g = $('gap'); g.classList.toggle('hidden', !(s.showGap && s.gapS !== null));
@@ -185,7 +210,9 @@ function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(.05, (now - last) / 1000); last = now; clock += dt;
   const inp = input.poll(screen !== 'game');
-  if (screen === 'game' && session) {
+  const turned = input.usingTouch && innerHeight > innerWidth; // portrait: wait for the player to rotate the device
+  if (screen === 'game' && session && turned) { /* paused */ }
+  else if (screen === 'game' && session) {
     if (inp.pressed.pause && session.state === 'run') show('pause');
     else { session.update(dt, inp); updateCams(session, dt); updateHud(session); }
   } else {
@@ -210,6 +237,23 @@ function frame(now) {
 }
 
 $('version').textContent = 'Version ' + VERSION;
+// ---------- touchscreen ----------
+const setTouch = v => { if (input.usingTouch === v) return; input.usingTouch = v; document.body.classList.toggle('touch', v); applyPad(); };
+addEventListener('touchstart', () => setTouch(true), { passive: true }); input.onKey = () => setTouch(false);
+const T = input.touch, tap = (id, fn) => $(id).addEventListener('pointerdown', e => { e.preventDefault(); sound.init(); fn(e); });
+const hold = (id, on, off) => { const el = $(id), end = e => { if (el.dataset.pid !== String(e.pointerId)) return; delete el.dataset.pid; el.classList.remove('down'); off(); };
+  el.addEventListener('pointerdown', e => { e.preventDefault(); sound.init(); el.dataset.pid = e.pointerId; try { el.setPointerCapture(e.pointerId); } catch (x) { /* older browsers */ } el.classList.add('down'); on(e); });
+  el.addEventListener('pointermove', e => { if (el.dataset.pid === String(e.pointerId)) on(e); }); for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(ev, end); };
+hold('tGas', () => T.throttle = 1, () => T.throttle = 0); hold('tBrake', () => T.brake = 1, () => T.brake = 0); hold('icHorn', () => T.horn = true, () => T.horn = false);
+hold('lookL', () => T.look = 'L', () => T.look = ''); hold('lookR', () => T.look = 'R', () => T.look = ''); hold('lookB', () => T.look = 'B', () => T.look = '');
+hold('tSteer', e => { const r = $('tSteer').getBoundingClientRect(), v = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width * .38))); T.steer = v; $('tKnob').style.transform = `translateX(${v * r.width * .3}px)`; }, () => { T.steer = 0; $('tKnob').style.transform = ''; });
+for (const [id, k] of [['blL', 'blinkL'], ['blR', 'blinkR'], ['icLights', 'lights'], ['icBelt', 'belt'], ['icBrake', 'handbrake'], ['icWipers', 'wipers'], ['icHazard', 'hazard']]) tap(id, () => input.queue.push(k));
+tap('tPause', () => { if (session?.state === 'run') show('pause'); });
+tap('gears', e => { // tap a gear letter to shift to it, one step at a time
+  const g = e.target.dataset?.g, p = session?.player; if (!g || !p || session.state !== 'run') return; const want = p.gears.indexOf(g);
+  while (p.gi !== want) { const msg = p.shift(Math.sign(want - p.gi), input.state.brake); if (msg) { ui.toast(msg, 'info'); break; } } sound.sfx('click'); });
+for (const ev of ['contextmenu', 'gesturestart', 'dblclick']) addEventListener(ev, e => { if (screen === 'game') e.preventDefault(); });
+
 syncSettings(); resize(); makeBackdrop(); show('menu'); requestAnimationFrame(frame);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => { /* offline play is optional */ });
 window.__game = { get session() { return session; }, startLesson, LESSONS, input, store, get screen() { return screen; } };

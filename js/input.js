@@ -24,10 +24,11 @@ export function detectPad(id) {
 export class Input {
   constructor() {
     this.down = new Set(); this.queue = []; this.padPrev = []; this.usingPad = false; this.navT = 0; this.scheme = 'ps'; this.padId = null; this.onPad = null;
+    this.usingTouch = false; this.onKey = null; this.touch = { steer: 0, throttle: 0, brake: 0, look: '', horn: false };
     this.state = { steer: 0, throttle: 0, brake: 0, look: '', horn: false, pressed: {} };
     addEventListener('keydown', e => {
       if (e.repeat) { if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault(); return; }
-      this.down.add(e.code); this.usingPad = false; if (PRESS[e.code]) this.queue.push(PRESS[e.code]);
+      this.down.add(e.code); this.usingPad = false; this.onKey?.(); if (PRESS[e.code]) this.queue.push(PRESS[e.code]);
       if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
     });
     addEventListener('keyup', e => this.down.delete(e.code));
@@ -40,6 +41,7 @@ export class Input {
     s.steer = (this.any(KEYS.right) ? 1 : 0) - (this.any(KEYS.left) ? 1 : 0);
     const L = this.any(KEYS.lookL), R = this.any(KEYS.lookR);
     s.look = this.any(KEYS.lookB) || (L && R) ? 'B' : L ? 'L' : R ? 'R' : ''; s.horn = this.any(KEYS.horn);
+    const T = this.touch; if (Math.abs(T.steer) > Math.abs(s.steer)) s.steer = T.steer; s.throttle = Math.max(s.throttle, T.throttle); s.brake = Math.max(s.brake, T.brake); if (!s.look) s.look = T.look; s.horn = s.horn || T.horn;
     s.nav = 0;
     const pads = navigator.getGamepads ? navigator.getGamepads() : []; let gp = null; for (const g of pads) if (g && g.connected && g.buttons.length >= 10) { gp = g; break; }
     this.pad = gp;
