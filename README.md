@@ -90,6 +90,15 @@ the main menu.
 
 Menus work with the mouse, arrow keys + Enter, or the controller D-pad + confirm button.
 
+## Version history
+
+The current version is shown at the bottom of the main menu.
+
+- **1.1.0** — PlayStation, Xbox and Switch controller prompts (PlayStation by default, automatic
+  detection, manual choice on the main menu).
+- **1.0.0** — First release: 23 lessons in two modes, keyboard and controller support,
+  double-click launcher for macOS.
+
 ## Planned lessons
 
 Not built yet:

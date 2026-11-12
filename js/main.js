@@ -6,6 +6,7 @@ import { Input, PADS } from './input.js';
 import { Sound } from './audio.js';
 
 const $ = id => document.getElementById(id);
+export const VERSION = '1.1.0';
 const KEY = 'fl-driving-school-v1';
 let store = { stars: {}, manual: false, sound: true, quality: 'high', pad: 'ps', padAuto: true };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* storage unavailable */ }
@@ -142,7 +143,8 @@ on('resRetry', () => startLesson(curLesson)); on('resLessons', () => { toMenu();
 on('optTrans', () => { store.manual = !store.manual; persist(); syncSettings(); });
 on('optSound', () => { store.sound = !store.sound; sound.setOn(store.sound); persist(); syncSettings(); });
 on('optPad', () => { const k = Object.keys(PADS); store.pad = k[(k.indexOf(store.pad) + 1) % k.length]; store.padAuto = false; persist(); applyPad(); });
-on('optQuality', () => { store.quality = store.quality === 'high' ? 'low' : 'high'; persist(); syncSettings(); resize(); });
+on('optQuality', () => { store.quality = store.quality === 'high' ? 'low' : 'high'; persist(); $('version').textContent = 'Version ' + VERSION;
+syncSettings(); resize(); });
 addEventListener('keydown', e => {
   if (screen === 'game') return; const f = focusables(); if (!f.length) return; let i = f.indexOf(document.activeElement);
   if (['ArrowDown', 'ArrowRight'].includes(e.code)) { f[(i + 1) % f.length].focus(); e.preventDefault(); }
@@ -207,5 +209,6 @@ function frame(now) {
   if (session && s.fp) { renderer.autoClear = false; renderer.clearDepth(); renderer.render(hudScene, hudCam); renderer.autoClear = true; }
 }
 
+$('version').textContent = 'Version ' + VERSION;
 syncSettings(); resize(); makeBackdrop(); show('menu'); requestAnimationFrame(frame);
 window.__game = { get session() { return session; }, startLesson, LESSONS, input, store, get screen() { return screen; } };
