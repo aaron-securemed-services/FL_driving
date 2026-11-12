@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunshine Driving School — Florida Driving Game</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="coach"><div id="coachTitle"></div><div id="coachText"></div></div>
+  <div id="rightcol">
+    <div id="limit"><small>SPEED<br>LIMIT</small><b id="limitN">30</b></div>
+    <div id="scoreBox"><small>SCORE</small><b id="score">100</b></div>
+    <div id="sig" class="hidden"><i></i><i></i><i></i></div>
+    <img id="signAhead" class="hidden" alt="Sign ahead">
+  </div>
+  <div id="gap" class="hidden"></div>
+  <div id="toasts"></div>
+  <div id="flash" class="hidden"></div>
+  <div id="hintKeys"></div>
+  <div id="dash">
+    <div id="blL" class="arrow">◀</div>
+    <div id="gauge"><div id="gaugeIn"><b id="speed">0</b><small>MPH</small></div></div>
+    <div id="dashMid">
+      <div id="gears"></div>
+      <div id="rpmWrap"><div id="rpm"></div></div>
+      <div id="icons"><span id="icLights" class="ic">LIGHTS</span><span id="icBelt" class="ic">BELT</span><span id="icBrake" class="ic">P-BRAKE</span><span id="icWipers" class="ic">WIPERS</span></div>
+    </div>
+    <div id="blR" class="arrow">▶</div>
+  </div>
+</div>
+
+<div id="menu" class="screen">
+  <div class="panel hero">
+    <div class="sun"></div>
+    <h1>Sunshine Driving School</h1>
+    <p class="sub">Learn Florida's rules of the road and practice real driving skills.</p>
+    <div class="modes">
+      <button id="btnTop" class="mode"><b>Top View</b><span>Rules of the Road</span><em>Signs, signals, right-of-way, school buses, highways and more</em></button>
+      <button id="btnFp" class="mode"><b>First Person</b><span>Behind the Wheel</span><em>Blind spots, pedestrians, speed, stopping and parking</em></button>
+    </div>
+    <div class="opts">
+      <button id="optTrans" class="small"></button><button id="optSound" class="small"></button><button id="optQuality" class="small"></button><button id="btnControls" class="small">Controls</button>
+    </div>
+    <p class="fine">Keyboard or controller. A study aid based on Florida driving rules — not an official FLHSMV product. Always study the official Florida Driver License Handbook.</p>
+  </div>
+</div>
+
+<div id="lessons" class="screen hidden">
+  <div class="panel wide">
+    <h2 id="lessonsTitle"></h2>
+    <div id="lessonGrid"></div>
+    <button id="lessonsBack" class="small" data-back>◀ Back</button>
+  </div>
+</div>
+
+<div id="brief" class="screen hidden">
+  <div class="panel">
+    <div class="tag" id="briefMode"></div>
+    <h2 id="briefTitle"></h2>
+    <h3>Florida rules in this lesson</h3>
+    <ul id="briefRules"></ul>
+    <p class="fine" id="briefTrans"></p>
+    <div class="row"><button id="briefStart" class="primary">Start Driving</button><button id="briefBack" class="small" data-back>◀ Back</button></div>
+  </div>
+</div>
+
+<div id="pause" class="screen hidden">
+  <div class="panel narrow">
+    <h2>Paused</h2>
+    <button id="pauseResume" class="primary" data-back>Resume</button>
+    <button id="pauseRestart">Restart lesson</button>
+    <button id="pauseQuit">Lesson list</button>
+  </div>
+</div>
+
+<div id="result" class="screen hidden">
+  <div class="panel">
+    <h2 id="resTitle"></h2>
+    <div id="resStars"></div>
+    <div id="resScore"></div>
+    <p id="resWhy"></p>
+    <ul id="resList" class="bad"></ul>
+    <h3>Remember</h3>
+    <ul id="resRules"></ul>
+    <div class="row"><button id="resNext" class="primary">Next lesson ▶</button><button id="resRetry">Try again</button><button id="resLessons" class="small" data-back>Lesson list</button></div>
+  </div>
+</div>
+
+<div id="controls" class="screen hidden">
+  <div class="panel">
+    <h2>Controls</h2>
+    <table>
+      <tr><th>Action</th><th>Keyboard</th><th>Controller</th></tr>
+      <tr><td>Gas / Brake</td><td>W / S or ↑ / ↓</td><td>RT / LT</td></tr>
+      <tr><td>Steer</td><td>A / D or ← / →</td><td>Left stick</td></tr>
+      <tr><td>Left / right turn signal</td><td>Q / E</td><td>LB / RB</td></tr>
+      <tr><td>Gear up / down (P‑R‑N‑D)</td><td>F / R</td><td>A / B</td></tr>
+      <tr><td>Headlights (off, low, high)</td><td>L</td><td>Y</td></tr>
+      <tr><td>Wipers</td><td>K</td><td>D‑pad ↑</td></tr>
+      <tr><td>Seat belt</td><td>B</td><td>D‑pad ↓</td></tr>
+      <tr><td>Hazard lights</td><td>X</td><td>D‑pad ←</td></tr>
+      <tr><td>Parking brake</td><td>Space</td><td>D‑pad →</td></tr>
+      <tr><td>Look left / right / behind</td><td>Z / C / V (hold)</td><td>Right stick ← → ↓</td></tr>
+      <tr><td>Horn</td><td>H</td><td>X</td></tr>
+      <tr><td>Pause</td><td>Esc or P</td><td>Start</td></tr>
+    </table>
+    <button id="controlsBack" class="small" data-back>◀ Back</button>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
