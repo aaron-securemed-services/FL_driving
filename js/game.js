@@ -143,9 +143,9 @@ export class Session {
     const p = this.player, w = this.world, t = this.t, sp = Math.abs(p.v), mph = sp * MPH, [fx, fz] = fwd(p.h), [rx, rz] = rgt(p.h);
     const loc = this.loc = w.locate(p.x, p.z);
     // --- staying on the road
-    let off = false; for (const [a, b] of [[2.05, .8], [2.05, -.8], [-2.05, .8], [-2.05, -.8]]) if (!w.locate(p.x + fx * a + rx * b, p.z + fz * a + rz * b)) off = true;
+    let off = false; for (const [a, b] of [[1.9, .72], [1.9, -.72], [-1.9, .72], [-1.9, -.72]]) if (!w.locate(p.x + fx * a + rx * b, p.z + fz * a + rz * b)) off = true;
     this.offT = off ? this.offT + dt : Math.min(this.offT, 0) + (this.offT < 0 ? dt : 0);
-    if (this.offT > .3) { this.violate('offroad', 'You hit the curb or left the pavement. Keep all four wheels on the road.', 5, false, 3); this.offT = -2; }
+    if (this.offT > .45) { this.violate('offroad', 'You hit the curb or left the pavement. Keep all four wheels on the road.', 5, false, 3); this.offT = -2; }
     this.lostT = loc ? 0 : this.lostT + dt; if (this.lostT > 5) return this.fail('You drove off the road.');
     // --- speed limit
     const lim = this.limit = w.zoneLimit(p.x, p.z) ?? loc?.limit ?? this.limit;

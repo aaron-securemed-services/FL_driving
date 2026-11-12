@@ -63,7 +63,7 @@ export function makeCar(type = 'sedan', color = 0xc0392b) {
   return g;
 }
 export function setCarLights(g, o, t) {
-  const u = g.userData, blink = (t * 1.5) % 1 < .5;
+  const u = g.userData, blink = (t * 1.5) % 1 < .5; if (!u.brake) return;
   u.brake.emissiveIntensity = o.brake ? 5 : (o.head ? 1.2 : 0);
   u.head.emissiveIntensity = o.head ? 5 : 0;
   u.bl.emissiveIntensity = (o.blinker === 'L' || o.hazard) && blink ? 6 : 0;
@@ -78,7 +78,7 @@ export function makeCockpit(color) {
   add(bx(1.8, .28, .5, dash, 0, .93, .82));                    // dashboard
   add(bx(.5, .12, .25, dash, .37, 1.07, .86));                 // instrument hood
   for (const s of [1, -1]) {
-    const p = add(bx(.055, .8, .07, trim, s * .86, 1.3, .8)); p.rotation.x = -.62; p.rotation.z = s * .08;  // A pillar
+    const p = add(bx(.04, .8, .05, trim, s * .93, 1.3, .8)); p.rotation.x = -.62; p.rotation.z = s * .08;  // A pillar
     add(bx(.1, .78, 3.2, trim, s * .93, .62, -.5));              // doors below the window line
     add(bx(.09, .55, .16, trim, s * .9, 1.27, -.42));            // B pillar
     add(bx(.09, .6, .3, trim, s * .88, 1.27, -1.62));            // C pillar

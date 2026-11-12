@@ -160,7 +160,7 @@ function updateHud(s) {
 function updateCams(s, dt) {
   const p = s.player;
   if (s.fp) { fpCam.rotation.set(0, Math.PI + p.lookAng, 0); return; }
-  camHd += wrap(p.h - camHd) * Math.min(1, dt * 3.2); const sp = Math.abs(p.v), [fx, fz] = fwd(camHd), H = 30 + sp * 1.3, back = 9 + sp * .12, ah = 6 + sp * .95;
+  camHd += wrap(p.h - camHd) * Math.min(1, dt * 3.2); const sp = Math.abs(p.v), [fx, fz] = fwd(camHd), H = 34 + sp * 1.3, back = 10 + sp * .1, ah = 1 + sp * .6;
   topCam.position.set(p.x - fx * back, H, p.z - fz * back); topCam.up.set(0, 1, 0); topCam.lookAt(p.x + fx * ah, 0, p.z + fz * ah);
 }
 

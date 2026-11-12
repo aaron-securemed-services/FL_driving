@@ -114,7 +114,7 @@ class Batch {
 const ENV = {
   day: { top: 0x1f6fe0, hor: 0xbfe6ff, sun: [.45, .8, .35], sunCol: 0xfff3dc, sunI: 3.2, hemi: .9, fog: [260, 1500], envI: .7, exp: 1 },
   dusk: { top: 0x27357a, hor: 0xff9e6b, sun: [.8, .2, .3], sunCol: 0xffa25e, sunI: 2.0, hemi: .5, fog: [200, 1200], envI: .5, exp: 1 },
-  night: { top: 0x02040c, hor: 0x0a1228, sun: [-.3, .8, .4], sunCol: 0x8fa8ff, sunI: .22, hemi: .1, fog: [50, 420], envI: .12, exp: 1 },
+  night: { top: 0x02040c, hor: 0x0a1228, sun: [-.3, .8, .4], sunCol: 0x8fa8ff, sunI: .45, hemi: .28, fog: [60, 480], envI: .2, exp: 1.25 },
   rain: { top: 0x55616d, hor: 0x9aa4ab, sun: [.3, .9, .2], sunCol: 0xdfe6ee, sunI: .9, hemi: 1.0, fog: [40, 380], envI: .6, exp: .95 },
 };
 
@@ -126,11 +126,11 @@ export class World {
     this.slope = 0; this.env = { time: 'day', rain: false }; this.R = rng(1234);
     const S2 = (o) => new THREE.MeshStandardMaterial(o), po = { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 };
     this.mat = {
-      asphalt: S2({ map: noiseTex('asph', 60, 60, 64, 20, 30), roughness: .93 }),
+      asphalt: S2({ map: noiseTex('asph', 60, 60, 64, 16, 0), roughness: .93 }),
       white: S2({ color: 0xf4f4f4, roughness: .6, ...po }), yellow: S2({ color: 0xf5c400, roughness: .6, ...po }),
       guide: new THREE.MeshBasicMaterial({ color: 0x35d0ff, transparent: true, opacity: .5, depthWrite: false, ...po }),
       walk: S2({ map: noiseTex('conc', 182, 180, 172, 12, 10), roughness: .95 }),
-      grass: S2({ map: noiseTex('grass', 78, 132, 60, 26, 60), roughness: 1 }),
+      grass: S2({ map: noiseTex('grass', 78, 132, 60, 26, 24), roughness: 1 }),
       pole: S2({ color: 0x777c80, metalness: .7, roughness: .4 }), dark: S2({ color: 0x1b1d20, roughness: .6 }),
       trunk: S2({ color: 0x6b4a2f, roughness: 1 }), leaf: S2({ color: 0x2e7d32, roughness: .9 }), palm: S2({ color: 0x3f9b3a, roughness: .8, side: THREE.DoubleSide }),
       cone: S2({ color: 0xff6a00, roughness: .6 }), roof: S2({ color: 0xa5512f, roughness: .8 }), roof2: S2({ color: 0x5b6168, roughness: .8 }),
