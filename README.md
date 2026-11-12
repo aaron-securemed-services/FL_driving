@@ -47,8 +47,16 @@ Automatic or manual transmission can be chosen on the main menu.
 
 ## Running it
 
-The game uses JavaScript modules, so it must be served over HTTP (opening `index.html`
-straight from disk will not work in most browsers).
+**On a Mac:** double-click `Start Game.command`. A small Terminal window opens, and the game
+opens in your browser. Leave that window open while you play; close it to stop.
+
+- The first time, macOS may say the file is from an unidentified developer. Right-click the
+  file, choose **Open**, then **Open** again. You only need to do this once.
+- For a desktop shortcut, right-click `Start Game.command`, choose **Make Alias**, and drag
+  the alias to your Desktop. Keep the original file inside the game folder.
+
+**Anywhere else:** the game uses JavaScript modules, so it must be served over HTTP (opening
+`index.html` straight from disk will not work in most browsers).
 
 ```bash
 python3 -m http.server 8000
